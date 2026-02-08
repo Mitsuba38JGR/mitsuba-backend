@@ -140,3 +140,14 @@ def api_profile_update():
     con.close()
 
     return jsonify({"success": True})
+ADMIN_TOKEN = "Mitsuba38JGR"
+
+@app.route("/admin/token", methods=["POST"])
+def api_admin_token():
+    data = request.json
+    token = data.get("token")
+
+    if token == ADMIN_TOKEN:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False})
