@@ -151,3 +151,34 @@ def api_admin_token():
         return jsonify({"success": True})
     else:
         return jsonify({"success": False})
+@app.route("/admin/users", methods=["POST"])
+def api_admin_users():
+    data = request.json
+    token = data.get("token")
+
+    if token != ADMIN_TOKEN:
+        return jsonify({"success": False, "error": "invalid token"})
+
+    con = sqlite3.connect("db/users.db")
+    cur = con.cursor()
+    cur.execute("SELECT id, username, bio FROM users")
+    users = cur.fetchall()
+    con.close()
+
+    return jsonify({"success": True, "users": users})
+@app.route("/admin/delete_user", methods=["POST"])
+def api_admin_delete_user():
+    data = request.json
+    token = data.get("token")
+    user_id = data.get("user_id")
+
+    if token != ADMIN_TOKEN:
+        return jsonify({"success": False, "error": "invalid token"})
+
+    con = sqlite3.connect("db/users.db")
+    cur = con.cursor()
+    cur.execute("DELETE FROM users WHERE id=?", (user_id,))
+    con.commit()
+    con.close()
+
+    return jsonify({"success": True})
